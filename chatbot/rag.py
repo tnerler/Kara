@@ -1,7 +1,6 @@
 from vector_database.chromadb_class import ChromaDB
 from llm.model import get_llm
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
-from reranking.cross_encoder import get_cross_encoder
 from utils.preprocess_data import get_data_loader
 from langchain_core.output_parsers import StrOutputParser
 
@@ -19,7 +18,6 @@ class Kara:
         self.docs = get_data_loader()
         self.db = ChromaDB()
         self.chain = self._build_chain()
-        self.cross_encoder = get_cross_encoder()
 
         # Adding documents to the vector database
         self.db.add(self.docs)
@@ -48,27 +46,12 @@ class Kara:
 
     def retrieve(self, question: str, k: int = 5): 
         start = time.time()
-
+    
         results = self.db.search(question, k=k)
         
-        docs = [doc.page_content for doc in results]
-
-        inputs = [(question, doc) for doc in docs]
-        scores = self.cross_encoder.predict(inputs)
-
-        reranked_pairs = sorted(zip(docs, scores),
-                               key=itemgetter(1),
-                               reverse=True)
-        
-        # print("*" * 50)
-        # print("------- 🫶 Top Scores 🫶 -------")
-        # for doc, score in reranked_pairs[:k]:
-        #     print(f"Document: {doc[:50]}... ---> Score: {score:.2f}")
-        # print("*" * 50)
-        # print()
-
-        reranked_docs = [doc for doc, _ in reranked_pairs[:k]]
-
+        # Just take the documents as-is
+        reranked_docs = [doc.page_content for doc in results[:k]]
+    
         print(f"Retrieved {len(reranked_docs)} chunks in {round(time.time()-start,2)}s")
         return reranked_docs
     
