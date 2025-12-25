@@ -1,0 +1,16 @@
+# --- CHROMADB DATABASE ---
+
+
+# --- PROMPT TEMPLATES ---
+prompt_template/
+
+# --- DATA ---
+data/
+
+# ENV AND VENV FILES
+.env
+.venv/
+
+# --- UNNECCESEARY ---
+.vscode/
+__pycache__/
