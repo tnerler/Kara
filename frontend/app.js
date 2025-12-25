@@ -65,13 +65,17 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
+  // Disable input and send button while waiting
+  input.disabled = true;
+  sendBtn.disabled = true;
+
   // Add user message to UI
   addMessage(text, "user");
   input.value = "";
 
   // Visual "Thinking" feedback
   avatar.classList.add("thinking");
-  
+
   const typingIndicator = document.createElement("div");
   typingIndicator.className = "message bot";
   typingIndicator.style.fontStyle = "italic";
@@ -95,7 +99,7 @@ async function sendMessage() {
     const data = await res.json();
     typingIndicator.remove();
 
-    // The "Forgetful" Quirk: 5% chance she just blanks out
+    // Forgetful Quirk: 5% chance of blank
     if (Math.random() < 0.05) {
       addMessage("I actually had a great answer for that, but it vanished into the fog. Try asking again? It's the B12, I swear.", "bot");
     } else {
@@ -107,8 +111,11 @@ async function sendMessage() {
     addMessage("Error. My neural circuits just took a nap. I blame the deficiency.", "bot");
     console.error("Chat Error:", e);
   } finally {
-    // Stop the avatar pulse
+    // Re-enable input and button after response
+    input.disabled = false;
+    sendBtn.disabled = false;
     avatar.classList.remove("thinking");
+    input.focus(); // keep focus on input
   }
 }
 
